@@ -7,30 +7,105 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-root-toast';
 
 const { width } = Dimensions.get('window');
 
+const initialUserInfo = {
+  name: '',
+  currency: 'usd',
+  income: 0,
+};
+
 const Settings = ({ navigation }) => {
+  const [formData, setFormData] = useState(initialUserInfo);
+
+  const handleValueChange = (value, name) => {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === 'income' ? parseInt(value) || 0 : value,
+    }));
+  };
+
+  const handlePress = async () => {
+    Toast.show('User informations is saved.', {
+      duration: Toast.durations.SHORT,
+      animation: true,
+    });
+    navigation.goBack();
+    await AsyncStorage.setItem('userInfo', JSON.stringify(formData));
+  };
+
+  const getUserData = async () => {
+    const data = await AsyncStorage.getItem('userInfo');
+    if (data) {
+      setFormData(JSON.parse(data));
+    }
+  };
+
+  useEffect(() => {
+    getUserData();
+  }, []);
+
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Name</Text>
-      <TextInput style={styles.input} />
+      <Text style={styles.label}>Your Name</Text>
+      <TextInput
+        style={styles.input}
+        onChangeText={(text) => handleValueChange(text, 'name')}
+        value={formData.name}
+      />
       <Text style={styles.label}>Preferred Currency</Text>
       <View style={styles.currencyContainer}>
-        <Pressable style={styles.currencyButton}>
-          <Text style={styles.currency}>$</Text>
+        <Pressable
+          style={[
+            styles.currencyButton,
+            {
+              backgroundColor:
+                formData.currency === 'usd' ? 'darkblue' : 'white',
+            },
+          ]}
+          onPress={() => handleValueChange('usd', 'currency')}
+        >
+          <Text
+            style={[
+              styles.currency,
+              { color: formData.currency === 'usd' ? 'white' : 'black' },
+            ]}
+          >
+            $
+          </Text>
         </Pressable>
-        <Pressable style={styles.currencyButton}>
-          <Text style={styles.currency}>₺</Text>
+        <Pressable
+          style={[
+            styles.currencyButton,
+            {
+              backgroundColor:
+                formData.currency === 'try' ? 'darkblue' : 'white',
+            },
+          ]}
+          onPress={() => handleValueChange('try', 'currency')}
+        >
+          <Text
+            style={[
+              styles.currency,
+              { color: formData.currency === 'try' ? 'white' : 'black' },
+            ]}
+          >
+            ₺
+          </Text>
         </Pressable>
       </View>
       <Text style={styles.label}>Monthly Income</Text>
-      <TextInput style={styles.input} />
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.goBack()}
-      >
+      <TextInput
+        style={styles.input}
+        keyboardType="numeric"
+        onChangeText={(text) => handleValueChange(text, 'income')}
+        value={String(formData.income)}
+      />
+      <TouchableOpacity style={styles.button} onPress={handlePress}>
         <Text style={styles.buttonText}>Save</Text>
       </TouchableOpacity>
     </View>
