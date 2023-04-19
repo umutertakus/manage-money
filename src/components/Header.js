@@ -2,8 +2,11 @@ import React from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { StyleSheet, Text } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
-const Header = ({ navigation }) => {
+const Header = () => {
+  const navigation = useNavigation();
+
   const handlePress = () => {
     navigation.navigate('Settings');
   };
