@@ -1,8 +1,36 @@
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import ExpensesCard from './ExpensesCard';
+import BudgetItem from './BudgetItem';
+
+const mock = [
+  {
+    name: 'Salary',
+    date: 'Oct 22, 2021',
+    income: true,
+    amount: '100.000',
+  },
+  {
+    name: 'Health',
+    date: 'Oct 22, 2021',
+    income: true,
+    amount: '100.000',
+  },
+  {
+    name: 'Shopping',
+    date: 'Oct 22, 2021',
+    income: true,
+    amount: '100.000',
+  },
+  {
+    name: 'Investment',
+    date: 'Oct 22, 2021',
+    income: true,
+    amount: '100.000',
+  },
+];
 
 const Finance = () => {
   return (
@@ -12,6 +40,12 @@ const Finance = () => {
         <ExpensesCard title="Income" expenses="200.000" />
         <ExpensesCard title="Expenses" expenses="10.000" />
       </View>
+      <Text style={styles.header}>Budget</Text>
+      <ScrollView style={{ marginHorizontal: 5, marginVertical: 10 }}>
+        {mock.map((element, index) => (
+          <BudgetItem key={index} element={element} />
+        ))}
+      </ScrollView>
       <TouchableOpacity style={styles.button}>
         <FontAwesome5 name="plus" size={20} color="white" />
       </TouchableOpacity>
