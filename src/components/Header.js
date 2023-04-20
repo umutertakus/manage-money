@@ -1,24 +1,52 @@
-import React from 'react';
-import { TouchableOpacity, View } from 'react-native';
-import { StyleSheet, Text } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import React, { useCallback, useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { formatNumber } from '../utils/helpers';
 
-const Header = () => {
+const Header = ({ userInfo }) => {
+  const { name, currency, income } = userInfo;
   const navigation = useNavigation();
 
+  const [monthlyIncome, setMonthlyIncome] = useState(0);
+
   const handlePress = () => {
-    navigation.navigate('Settings');
+    navigation.navigate('Settings', {
+      transitionSpec: {
+        open: { delay: 100, animation: 'timing' },
+        close: { animation: 'timing' },
+      },
+    });
   };
+
+  const getMonthlyIncome = () => {
+    const formattedIncome = formatNumber(income);
+    setMonthlyIncome(formattedIncome);
+  };
+
+  const getHeaderText = () => {
+    if (name) {
+      return `Hi ${name},`;
+    } else return 'Hi,';
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      getMonthlyIncome();
+    }, [income])
+  );
 
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={handlePress} style={{ alignSelf: 'flex-end' }}>
         <FontAwesome5 name="credit-card" size={24} color="white" />
       </TouchableOpacity>
-      <Text style={styles.welcomeTextTop}>Hi,</Text>
+      <Text style={styles.welcomeTextTop}>{getHeaderText()}</Text>
       <Text style={styles.welcomeTextBottom}>welcome!</Text>
-      <Text style={styles.balance}>$100.000</Text>
+      <Text style={styles.balance}>
+        {currency === 'usd' ? '$' : '₺'}
+        {income}
+      </Text>
       <Text style={styles.balanceText}>your monthly income</Text>
     </View>
   );
