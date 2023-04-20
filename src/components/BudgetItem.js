@@ -1,8 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
+import { formatNumber } from '../utils/helpers';
 
-const BudgetItem = ({ element }) => {
+const BudgetItem = ({ element, currency }) => {
   const getIcon = (name) => {
     switch (name) {
       case 'Salary':
@@ -50,7 +51,8 @@ const BudgetItem = ({ element }) => {
         </View>
       </View>
       <Text style={styles.amount}>
-        {element.income ? '+' : '-'} {element.amount}
+        {element.income ? '+' : '-'} {currency === 'usd' ? '$' : '₺'}
+        {formatNumber(element.amount)}
       </Text>
     </View>
   );

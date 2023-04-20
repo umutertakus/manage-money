@@ -26,7 +26,7 @@ const Home = () => {
   return (
     <View style={styles.container}>
       <Header userInfo={userInfo} />
-      <Finance />
+      <Finance userInfo={userInfo} />
     </View>
   );
 };

@@ -1,33 +1,47 @@
-import React, { useEffect } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { StyleSheet } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
-import ExpensesCard from './ExpensesCard';
-import BudgetItem from './BudgetItem';
+import { useNavigation } from '@react-navigation/core';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback } from 'react';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAsyncStorageData, selectItems } from '../store/slices/appSlice';
-import { useNavigation } from '@react-navigation/core';
+import BudgetItem from './BudgetItem';
+import ExpensesCard from './ExpensesCard';
 
-const Finance = () => {
+const Finance = ({ userInfo }) => {
+  const { income: monthlyIncome, currency } = userInfo;
+
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const items = useSelector(selectItems);
 
-  useEffect(() => {
-    dispatch(fetchAsyncStorageData());
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(fetchAsyncStorageData());
+    }, [])
+  );
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Finance Balance</Text>
       <View style={styles.cardContainer}>
-        <ExpensesCard title="Income" expenses="200.000" />
-        <ExpensesCard title="Expenses" expenses="10.000" />
+        <ExpensesCard
+          title="Income"
+          currency={currency}
+          monthlyIncome={monthlyIncome}
+        />
+        <ExpensesCard title="Expenses" currency={currency} />
       </View>
       <Text style={styles.header}>Budget</Text>
       <ScrollView style={{ marginHorizontal: 5, marginVertical: 10 }}>
         {items.map((element, index) => (
-          <BudgetItem key={index} element={element} />
+          <BudgetItem key={index} element={element} currency={currency} />
         ))}
       </ScrollView>
       <TouchableOpacity
