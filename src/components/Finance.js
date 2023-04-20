@@ -11,7 +11,7 @@ import { useNavigation } from '@react-navigation/core';
 const Finance = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const mock = useSelector(selectItems);
+  const items = useSelector(selectItems);
 
   useEffect(() => {
     dispatch(fetchAsyncStorageData());
@@ -26,7 +26,7 @@ const Finance = () => {
       </View>
       <Text style={styles.header}>Budget</Text>
       <ScrollView style={{ marginHorizontal: 5, marginVertical: 10 }}>
-        {mock.map((element, index) => (
+        {items.map((element, index) => (
           <BudgetItem key={index} element={element} />
         ))}
       </ScrollView>

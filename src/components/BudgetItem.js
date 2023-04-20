@@ -56,7 +56,7 @@ const BudgetItem = ({ element }) => {
   );
 };
 
-export default BudgetItem;
+export default React.memo(BudgetItem);
 
 const styles = StyleSheet.create({
   container: {

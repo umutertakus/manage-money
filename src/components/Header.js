@@ -18,8 +18,8 @@ const Header = () => {
       </TouchableOpacity>
       <Text style={styles.welcomeTextTop}>Hi,</Text>
       <Text style={styles.welcomeTextBottom}>welcome!</Text>
-      <Text style={styles.balance}>$ 100.000</Text>
-      <Text style={styles.balanceText}>your balance</Text>
+      <Text style={styles.balance}>$100.000</Text>
+      <Text style={styles.balanceText}>your monthly income</Text>
     </View>
   );
 };
