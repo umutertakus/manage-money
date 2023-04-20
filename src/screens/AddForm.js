@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import Checkbox from 'expo-checkbox';
 import React, { useState } from 'react';
 import {
@@ -9,14 +10,22 @@ import {
   View,
 } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
+import Toast from 'react-native-root-toast';
+import { useDispatch } from 'react-redux';
+import { addIncomeOrExpenditure } from '../store/slices/appSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
 
 const AddForm = () => {
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
+
   const [isChecked, setChecked] = useState(false);
+  const [amount, setAmount] = useState(0);
 
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(null);
+  const [selectValue, setSelectValue] = useState(null);
   const [items, setItems] = useState([
     { label: 'Salary', value: 'Salary' },
     { label: 'Health expenses', value: 'Health' },
@@ -24,22 +33,69 @@ const AddForm = () => {
     { label: 'Investment', value: 'Investment' },
   ]);
 
+  const handlePress = async () => {
+    if (selectValue && amount !== 0) {
+      Toast.show(`New ${isChecked ? 'income' : 'expenditure'} added.`, {
+        duration: Toast.durations.SHORT,
+        animation: true,
+      });
+
+      const formattedDate = new Date().toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
+
+      const object = {
+        name: selectValue,
+        date: formattedDate,
+        income: isChecked,
+        amount,
+      };
+      dispatch(addIncomeOrExpenditure(object));
+
+      let allData = [];
+      const data = await AsyncStorage.getItem('userItems');
+      if (data) {
+        allData = [...JSON.parse(data), object];
+        await AsyncStorage.setItem('userItems', JSON.stringify(allData));
+      } else {
+        await AsyncStorage.setItem('userItems', JSON.stringify([object]));
+      }
+
+      navigation.goBack();
+    } else {
+      Toast.show('You must fill the required fields.', {
+        duration: Toast.durations.SHORT,
+        animation: true,
+        backgroundColor: 'red',
+        textColor: 'white',
+        position: Toast.positions.CENTER,
+      });
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={{ zIndex: 1000 }}>
         <DropDownPicker
           open={open}
-          value={value}
+          value={selectValue}
           items={items}
           setOpen={setOpen}
-          setValue={setValue}
+          setValue={setSelectValue}
           setItems={setItems}
           dropDownContainerStyle={{ zIndex: 9999 }}
           placeholder="Select income / expenditure type"
         />
       </View>
       <Text style={styles.label}>Amount</Text>
-      <TextInput style={styles.input} keyboardType="numeric" />
+      <TextInput
+        style={styles.input}
+        keyboardType="numeric"
+        value={String(amount)}
+        onChangeText={(text) => setAmount(parseInt(text) || 0)}
+      />
       <View style={styles.checkboxContainer}>
         <Text style={styles.label}>Is the amount you entered an income?</Text>
         <Checkbox
@@ -48,7 +104,7 @@ const AddForm = () => {
           onValueChange={setChecked}
         />
       </View>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={handlePress}>
         <Text style={styles.buttonText}>Add</Text>
       </TouchableOpacity>
     </View>

@@ -1,38 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import ExpensesCard from './ExpensesCard';
 import BudgetItem from './BudgetItem';
-
-const mock = [
-  {
-    name: 'Salary',
-    date: 'Oct 22, 2021',
-    income: true,
-    amount: '100.000',
-  },
-  {
-    name: 'Health',
-    date: 'Oct 22, 2021',
-    income: true,
-    amount: '100.000',
-  },
-  {
-    name: 'Shopping',
-    date: 'Oct 22, 2021',
-    income: true,
-    amount: '100.000',
-  },
-  {
-    name: 'Investment',
-    date: 'Oct 22, 2021',
-    income: true,
-    amount: '100.000',
-  },
-];
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchAsyncStorageData, selectItems } from '../store/slices/appSlice';
+import { useNavigation } from '@react-navigation/core';
 
 const Finance = () => {
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
+  const mock = useSelector(selectItems);
+
+  useEffect(() => {
+    dispatch(fetchAsyncStorageData());
+  }, []);
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Finance Balance</Text>
@@ -46,7 +30,10 @@ const Finance = () => {
           <BudgetItem key={index} element={element} />
         ))}
       </ScrollView>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('Add Form')}
+      >
         <FontAwesome5 name="plus" size={20} color="white" />
       </TouchableOpacity>
     </View>
